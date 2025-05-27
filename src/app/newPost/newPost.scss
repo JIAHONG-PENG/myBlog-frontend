@@ -1,0 +1,25 @@
+.container {
+    border: 1px solid black;
+    width: 70%;
+    height: 50%;
+    margin: auto;
+    padding: 20px;
+    
+    .title {
+        width: 90%;
+    }
+    
+    .content {
+        width: 90%;
+        min-height: 300px;
+        resize: none;
+    }
+
+    .submit-button {
+        border: 1px solid black;
+        width: fit-content;
+        padding: 5px;
+        margin-top: 20px;
+        cursor: pointer;
+    }
+}
