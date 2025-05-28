@@ -7,4 +7,42 @@
         margin-top: 20px;
         background-color: lightgray;
     }
+
+    .comment-header {
+        position: relative;
+        .new-commment-button {
+            border: 1px solid black;
+            padding: 5px;
+            width: fit-content;
+            position: absolute;
+            right: 0;
+            top: 0;
+            cursor: pointer;
+        }
+    }
+
+    .comment-container {
+
+        .new-comment-input-container {
+            display: flex;
+            flex-direction: row;
+            height: 30px;
+            justify-content: space-between;
+
+            &.hidden {
+                display: none;
+            }
+
+            .new-comment-input {
+                width: 80%;
+    
+                &-button {
+                    border: 1px solid black;
+                    padding: 5px;
+                    width: fit-content;
+                    cursor: pointer;
+                }
+            }
+        }
+    }
 }

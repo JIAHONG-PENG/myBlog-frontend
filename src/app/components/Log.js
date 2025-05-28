@@ -1,11 +1,15 @@
 import "./Log.scss";
 import Comment from "./Comment";
-import { GET } from "../util";
+import { GET, POST, getDateTime } from "../util";
 import { useEffect, useState, useRef } from "react";
+import { useGlobalData } from "./GlobalDataContext";
 
 export default function Log({ logId, date, title, author, content }) {
     const [comment, setComment] = useState([]);
     const hasFetched = useRef(false);
+    const commentInputRef = useRef();
+    const commentInputContainerRef = useRef();
+    const { globalData } = useGlobalData();
 
     async function fetchCommment() {
         const res = await GET(
@@ -25,6 +29,28 @@ export default function Log({ logId, date, title, author, content }) {
         />
     ));
 
+    function newCommentOnClickHandler() {
+        commentInputContainerRef.current.classList.remove("hidden");
+    }
+
+    async function commentSubmitOnClickHandler() {
+        if (commentInputRef.current.value == "") {
+            alert("Comment can't be empty.");
+        } else {
+            const res = await POST(
+                `${process.env.NEXT_PUBLIC_SERVER_URL}/comment`,
+                {
+                    logId,
+                    username: globalData.username,
+                    date: getDateTime(),
+                    content: commentInputRef.current.value,
+                }
+            );
+            const r = await res.json();
+            console.log(r);
+        }
+    }
+
     useEffect(() => {
         if (!hasFetched.current) {
             hasFetched.current = true;
@@ -41,10 +67,31 @@ export default function Log({ logId, date, title, author, content }) {
             <div>{date}</div>
             <div className="content">{content}</div>
 
-            <h3>
-                <u>Comment</u>
-            </h3>
-            <ul className="comment-container">{commentList}</ul>
+            <div className="comment-header">
+                <h3>
+                    <u>Comment</u>
+                </h3>
+                <div
+                    className="new-commment-button"
+                    onClick={newCommentOnClickHandler}
+                >
+                    {" "}
+                    + New Commment
+                </div>
+            </div>
+            <ul className="comment-container">
+                {commentList}
+                <div
+                    className="new-comment-input-container hidden"
+                    ref={commentInputContainerRef}
+                >
+                    <input
+                        className="new-comment-input"
+                        ref={commentInputRef}
+                    />
+                    <div className="new-comment-input-button">Send</div>
+                </div>
+            </ul>
         </div>
     );
 }

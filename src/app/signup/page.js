@@ -32,7 +32,7 @@ export default function SigninPage() {
             if (r.status == 500) {
                 alert("Username existing");
             } else {
-                alert("Sign up sucessful");
+                alert("Sign up successful");
                 router.push("/");
             }
         }
@@ -40,8 +40,8 @@ export default function SigninPage() {
 
     return (
         <div>
+            <h3>Sign up</h3>
             <form>
-                <h3>Sign up</h3>
                 <div>Username:</div>
                 <input ref={usernameRef} />
                 <div>Password:</div>

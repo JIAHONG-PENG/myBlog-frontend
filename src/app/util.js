@@ -1,6 +1,7 @@
 export async function GET(url) {
     return await fetch(url, {
         method: "GET",
+        credentials: "include",
         headers: {
             "Content-Type": "application/json",
         },
@@ -10,6 +11,7 @@ export async function GET(url) {
 export async function POST(url, body) {
     return await fetch(url, {
         method: "POST",
+        credentials: "include",
         headers: {
             "Content-Type": "application/json",
         },

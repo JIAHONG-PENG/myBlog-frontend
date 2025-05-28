@@ -5,6 +5,9 @@ import Header from "./components/Header";
 import Log from "./components/Log";
 import { useEffect, useState } from "react";
 import React from "react";
+import { GET } from "./util";
+import { useGlobalData } from "./components/GlobalDataContext";
+// import { useRouter } from "next/navigation";
 
 type Post = {
     logId: number;
@@ -15,16 +18,9 @@ type Post = {
 };
 
 export default function Home() {
-    const GET = async function (url: string) {
-        return await fetch(url, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-            },
-        });
-    };
-
     const [allPost, setAllPost] = useState<Array<Post>>([]);
+    const { setGlobalData } = useGlobalData();
+    // const router = useRouter();
 
     const postList: React.JSX.Element[] = allPost.map(
         ({ logId, username, title, date, content }: Post, index: number) => (
@@ -45,34 +41,25 @@ export default function Home() {
         setAllPost(r);
     }
 
+    async function whoami() {
+        const res = await GET(`${process.env.NEXT_PUBLIC_SERVER_URL}/me`);
+        const r = await res.json();
+        setGlobalData({ username: r.username, login: r.login });
+        if (!r.login) {
+            alert("You aren't logged in. To make a post, please log in first.");
+            // router.push("/login");
+        }
+    }
+
     useEffect(() => {
+        whoami();
         fetchPost();
     }, []);
 
     return (
         <div>
             <Header />
-            <div className="blog-container">
-                {postList}
-                {/* <Log
-                    title="test1"
-                    author="chris"
-                    date="2025.1.1 08:00"
-                    content="ababasdfsfasdfdf sdfsdf dsdf sdfsdf sdfsdfsdf sdfds sdfsdf dsfsdfsdf dsfsdfsd dfdfsd sdf dsf dsf d dsff sdf sdfsdfsd fsd sdfsdfsdfsd sdfsd fsdfsdfsdfsdf "
-                />
-                <Log
-                    title="test1"
-                    author="chris"
-                    date="2025.1.1 08:00"
-                    content="ababasdfsfasdfdf sdfsdf dsdf sdfsdf sdfsdfsdf sdfds sdfsdf dsfsdfsdf dsfsdfsd dfdfsd sdf dsf dsf d dsff sdf sdfsdfsd fsd sdfsdfsdfsd sdfsd fsdfsdfsdfsdf "
-                />
-                <Log
-                    title="test1"
-                    author="chris"
-                    date="2025.1.1 08:00"
-                    content="ababasdfsfasdfdf sdfsdf dsdf sdfsdf sdfsdfsdf sdfds sdfsdf dsfsdfsdf dsfsdfsd dfdfsd sdf dsf dsf d dsff sdf sdfsdfsd fsd sdfsdfsdfsd sdfsd fsdfsdfsdfsdf "
-                /> */}
-            </div>
+            <div className="blog-container">{postList}</div>
         </div>
     );
 }
