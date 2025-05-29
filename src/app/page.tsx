@@ -3,7 +3,7 @@
 import "./page.scss";
 import Header from "./components/Header";
 import Log from "./components/Log";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import React from "react";
 import { GET } from "./util";
 import { useGlobalData } from "./components/GlobalDataContext";
@@ -19,6 +19,8 @@ type Post = {
 
 export default function Home() {
     const [allPost, setAllPost] = useState<Array<Post>>([]);
+    const hasFetched = useRef(false);
+
     const { setGlobalData } = useGlobalData();
     // const router = useRouter();
 
@@ -52,14 +54,19 @@ export default function Home() {
     }
 
     useEffect(() => {
-        whoami();
-        fetchPost();
+        if (!hasFetched.current) {
+            whoami();
+            fetchPost();
+            hasFetched.current = true;
+        }
     }, []);
 
     return (
         <div>
             <Header />
-            <div className="blog-container">{postList}</div>
+            <div className="blog-container">
+                {postList.length == 0 ? "No post yet" : postList}
+            </div>
         </div>
     );
 }
