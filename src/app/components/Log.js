@@ -9,6 +9,10 @@ export default function Log({ logId, date, title, author, content }) {
     const hasFetched = useRef(false);
     const commentInputRef = useRef();
     const commentInputContainerRef = useRef();
+    const commentContainerRef = useRef();
+    const newCommentButtonRef = useRef();
+
+    const [commentVisible, setCommentVisible] = useState(false);
     const { globalData } = useGlobalData();
 
     async function fetchCommment() {
@@ -29,8 +33,23 @@ export default function Log({ logId, date, title, author, content }) {
         />
     ));
 
+    // add new comment
     function newCommentOnClickHandler() {
-        commentInputContainerRef.current.classList.remove("hidden");
+        commentInputContainerRef.current.classList.toggle("hidden");
+        setCommentMaxHeight();
+        setCommentVisible(true);
+    }
+
+    // show or hide comment
+    function toggleHandler() {
+        if (commentVisible) {
+            commentContainerRef.current.style.maxHeight = "0px";
+            commentInputContainerRef.current.classList.add("hidden");
+        } else {
+            newCommentButtonRef.current.classList.remove("hidden");
+            setCommentMaxHeight();
+        }
+        setCommentVisible(!commentVisible);
     }
 
     async function commentSubmitOnClickHandler() {
@@ -46,15 +65,31 @@ export default function Log({ logId, date, title, author, content }) {
                     content: commentInputRef.current.value,
                 }
             );
-            const r = await res.json();
-            console.log(r);
+
+            if (res.ok) {
+                await fetchCommment();
+                commentInputRef.current.value = "";
+                commentInputContainerRef.current.classList.add("hidden");
+            }
+        }
+    }
+
+    function setCommentMaxHeight() {
+        if (commentContainerRef.current) {
+            commentContainerRef.current.style.maxHeight =
+                commentContainerRef.current.scrollHeight + 50 + "px";
         }
     }
 
     useEffect(() => {
         if (!hasFetched.current) {
             hasFetched.current = true;
-            fetchCommment();
+            fetchCommment().then(() => {
+                requestAnimationFrame(() => {
+                    commentContainerRef.current.style.maxHeight = "0px";
+                    // setCommentMaxHeight();
+                });
+            });
         }
     }, []);
 
@@ -69,17 +104,23 @@ export default function Log({ logId, date, title, author, content }) {
 
             <div className="comment-header">
                 <h3>
-                    <u>Comment</u>
+                    <div
+                        style={{ display: "inline", cursor: "pointer" }}
+                        onClick={toggleHandler}
+                    >
+                        {commentVisible ? "▲" : "▼"}{" "}
+                    </div>
+                    <u>Comment ({comment.length})</u>
                 </h3>
                 <div
                     className="new-commment-button"
                     onClick={newCommentOnClickHandler}
+                    ref={newCommentButtonRef}
                 >
-                    {" "}
                     + New Commment
                 </div>
             </div>
-            <ul className="comment-container">
+            <ul className="comment-container" ref={commentContainerRef}>
                 {commentList}
                 <div
                     className="new-comment-input-container hidden"
@@ -89,7 +130,12 @@ export default function Log({ logId, date, title, author, content }) {
                         className="new-comment-input"
                         ref={commentInputRef}
                     />
-                    <div className="new-comment-input-button">Send</div>
+                    <div
+                        className="new-comment-input-button"
+                        onClick={commentSubmitOnClickHandler}
+                    >
+                        Send
+                    </div>
                 </div>
             </ul>
         </div>

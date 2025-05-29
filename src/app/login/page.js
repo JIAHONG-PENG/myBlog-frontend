@@ -42,8 +42,16 @@ export default function LoginPage() {
                 <div>Password:</div>
                 <input ref={passwordRef} />
                 <br />
+                <br />
                 <button onClick={submitOnClickHandler}>Log in</button>
             </form>
+            <br />
+            <div>
+                Don&apos;t have account?{" "}
+                <b>
+                    <a href="/signup">Sign up</a>
+                </b>
+            </div>
         </div>
     );
 }

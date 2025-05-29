@@ -48,7 +48,9 @@ export default function SigninPage() {
                 <input ref={password1Ref} />
                 <div>Enter password again:</div>
                 <input ref={password2Ref} />
-                <button onClick={onSubmitHandler}>Submit</button>
+                <br />
+                <br />
+                <button onClick={onSubmitHandler}>Sign up</button>
             </form>
         </div>
     );
