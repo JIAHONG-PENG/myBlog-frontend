@@ -56,20 +56,24 @@ export default function Log({ logId, date, title, author, content }) {
         if (commentInputRef.current.value == "") {
             alert("Comment can't be empty.");
         } else {
+            // hide comment input
+            commentInputContainerRef.current.classList.add("hidden");
+            const c = commentInputRef.current.value;
+            // empty comment input
+            commentInputRef.current.value = "";
+
             const res = await POST(
                 `${process.env.NEXT_PUBLIC_SERVER_URL}/comment`,
                 {
                     logId,
                     username: globalData.username,
                     date: getDateTime(),
-                    content: commentInputRef.current.value,
+                    content: c,
                 }
             );
 
             if (res.ok) {
                 await fetchCommment();
-                commentInputRef.current.value = "";
-                commentInputContainerRef.current.classList.add("hidden");
             }
         }
     }
