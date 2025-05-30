@@ -4,10 +4,39 @@
     margin-bottom: 10px;
     border-bottom: 1px solid black;
 
+
+
     >:nth-child(1) {
         margin-right: 20px;
         white-space: normal;
         overflow-wrap: break-word;
         width: 10%;
     }
+
+    >:nth-child(2) {
+        padding-right: 20px;
+    }
+
+    .delete-button {
+        border: 1px solid black;
+        width: fit-content;
+        height: fit-content;
+        padding: 2px 5px 2px 5px;
+        cursor: pointer;
+        margin-left: auto;
+
+        // opacity: 1;
+        // visibility: visible;
+        // transition: opacity 0.5s ease, visibility 0.5s ease;
+
+        // &.hidden {
+        //     opacity: 0;
+        //     visibility: hidden;
+        // }
+    }
+
+    // &:hover .delete-button {
+    //     opacity: 1;
+    //     visibility: visible;
+    // }
 }

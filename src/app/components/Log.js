@@ -27,9 +27,12 @@ export default function Log({ logId, date, title, author, content }) {
     const commentList = comment.map((c, index) => (
         <Comment
             key={index}
+            logId={c.logId}
+            commentId={c.commentId}
             date={c.date}
             author={c.username}
             content={c.content}
+            fetchCommment={fetchCommment}
         />
     ));
 
@@ -46,7 +49,6 @@ export default function Log({ logId, date, title, author, content }) {
             commentContainerRef.current.style.maxHeight = "0px";
             commentInputContainerRef.current.classList.add("hidden");
         } else {
-            newCommentButtonRef.current.classList.remove("hidden");
             setCommentMaxHeight();
         }
         setCommentVisible(!commentVisible);
@@ -73,15 +75,18 @@ export default function Log({ logId, date, title, author, content }) {
             );
 
             if (res.ok) {
-                await fetchCommment();
+                await fetchCommment().then(() => {
+                    requestAnimationFrame(() => {
+                        setCommentMaxHeight();
+                    });
+                });
             }
         }
     }
 
     function setCommentMaxHeight() {
         if (commentContainerRef.current) {
-            commentContainerRef.current.style.maxHeight =
-                commentContainerRef.current.scrollHeight + 50 + "px";
+            commentContainerRef.current.style.maxHeight = "400px";
         }
     }
 
@@ -126,22 +131,19 @@ export default function Log({ logId, date, title, author, content }) {
             </div>
             <ul className="comment-container" ref={commentContainerRef}>
                 {commentList}
-                <div
-                    className="new-comment-input-container hidden"
-                    ref={commentInputContainerRef}
-                >
-                    <input
-                        className="new-comment-input"
-                        ref={commentInputRef}
-                    />
-                    <div
-                        className="new-comment-input-button"
-                        onClick={commentSubmitOnClickHandler}
-                    >
-                        Send
-                    </div>
-                </div>
             </ul>
+            <div
+                className="new-comment-input-container hidden"
+                ref={commentInputContainerRef}
+            >
+                <input className="new-comment-input" ref={commentInputRef} />
+                <div
+                    className="new-comment-input-button"
+                    onClick={commentSubmitOnClickHandler}
+                >
+                    Send
+                </div>
+            </div>
         </div>
     );
 }

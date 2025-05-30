@@ -1,3 +1,5 @@
+const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL;
+
 export async function GET(url) {
     return await fetch(url, {
         method: "GET",
@@ -11,6 +13,17 @@ export async function GET(url) {
 export async function POST(url, body) {
     return await fetch(url, {
         method: "POST",
+        credentials: "include",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+    });
+}
+
+export async function DELETE(url, body) {
+    return await fetch(`${SERVER_URL}${url}`, {
+        method: "DELETE",
         credentials: "include",
         headers: {
             "Content-Type": "application/json",

@@ -27,36 +27,37 @@
     }
 
     .comment-container {
-        overflow: hidden;
+        overflow: scroll;
         transition: opacity 0.3s ease, max-height 0.3s ease;
         opacity: 1;
-
-        .new-comment-input-container {
-            display: flex;
-            flex-direction: row;
-            height: 30px;
-            justify-content: space-between;
-    
-            &.hidden {
-                display: none;
-            }
-    
-            .new-comment-input {
-                width: 80%;
-    
-                &-button {
-                    border: 1px solid black;
-                    padding: 5px;
-                    width: fit-content;
-                    cursor: pointer;
-                }
-            }
-        }
+        
 
         // &.hidden {
         //     opacity: 0;
         //     max-height: 0;
         //     pointer-events: none;
         // }
+    }
+
+    .new-comment-input-container {
+        display: flex;
+        flex-direction: row;
+        height: 30px;
+        justify-content: space-between;
+
+        &.hidden {
+            display: none;
+        }
+
+        .new-comment-input {
+            width: 80%;
+
+            &-button {
+                border: 1px solid black;
+                padding: 5px;
+                width: fit-content;
+                cursor: pointer;
+            }
+        }
     }
 }
