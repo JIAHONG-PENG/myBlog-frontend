@@ -29,7 +29,7 @@ export default function SigninPage() {
             );
             const r = await res.json();
 
-            if (r.status == 500) {
+            if (r.affectedRow == 0) {
                 alert("Username existing");
             } else {
                 alert("Sign up successful");
