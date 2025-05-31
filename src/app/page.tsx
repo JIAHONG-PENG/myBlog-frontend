@@ -33,6 +33,7 @@ export default function Home() {
                 date={date}
                 author={username}
                 content={content}
+                fetchPost={fetchPost}
             />
         )
     );
@@ -47,10 +48,10 @@ export default function Home() {
         const res = await GET(`${process.env.NEXT_PUBLIC_SERVER_URL}/me`);
         const r = await res.json();
         setGlobalData({ username: r.username, login: r.login });
-        if (!r.login) {
-            alert("You aren't logged in. To make a post, please log in first.");
-            // router.push("/login");
-        }
+        // if (!r.login) {
+        //     alert("You aren't logged in. To make a post, please log in first");
+        //     // router.push("/login");
+        // }
     }
 
     useEffect(() => {

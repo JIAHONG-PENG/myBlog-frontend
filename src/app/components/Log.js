@@ -1,10 +1,17 @@
 import "./Log.scss";
 import Comment from "./Comment";
-import { GET, POST, getDateTime } from "../util";
+import { GET, POST, getDateTime, DELETE } from "../util";
 import { useEffect, useState, useRef } from "react";
 import { useGlobalData } from "./GlobalDataContext";
 
-export default function Log({ logId, date, title, author, content }) {
+export default function Log({
+    fetchPost,
+    logId,
+    date,
+    title,
+    author,
+    content,
+}) {
     const [comment, setComment] = useState([]);
     const hasFetched = useRef(false);
     const commentInputRef = useRef();
@@ -38,9 +45,13 @@ export default function Log({ logId, date, title, author, content }) {
 
     // add new comment
     function newCommentOnClickHandler() {
-        commentInputContainerRef.current.classList.toggle("hidden");
-        setCommentMaxHeight();
-        setCommentVisible(true);
+        if (globalData.username) {
+            commentInputContainerRef.current.classList.toggle("hidden");
+            setCommentMaxHeight();
+            setCommentVisible(true);
+        } else {
+            alert("Please log in first");
+        }
     }
 
     // show or hide comment
@@ -90,6 +101,15 @@ export default function Log({ logId, date, title, author, content }) {
         }
     }
 
+    async function deleteOnClickHandler() {
+        const res = await DELETE("/logs", {
+            logId,
+        });
+        if (res.ok) {
+            await fetchPost();
+        }
+    }
+
     useEffect(() => {
         if (!hasFetched.current) {
             hasFetched.current = true;
@@ -110,6 +130,15 @@ export default function Log({ logId, date, title, author, content }) {
             <div>{author}</div>
             <div>{date}</div>
             <div className="content">{content}</div>
+
+            {author == globalData.username && (
+                <div
+                    className="log-delete-button"
+                    onClick={deleteOnClickHandler}
+                >
+                    x
+                </div>
+            )}
 
             <div className="comment-header">
                 <h3>

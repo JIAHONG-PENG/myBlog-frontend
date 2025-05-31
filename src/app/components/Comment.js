@@ -1,5 +1,6 @@
 import "./Comment.scss";
 import { DELETE } from "../util";
+import { useGlobalData } from "./GlobalDataContext";
 
 export default function Comment({
     logId,
@@ -9,6 +10,8 @@ export default function Comment({
     content,
     fetchCommment,
 }) {
+    const { globalData } = useGlobalData();
+
     async function deleteOnClickHandler() {
         const res = await DELETE("/comment", {
             commentId,
@@ -26,9 +29,14 @@ export default function Comment({
                 <div>{date}</div>
             </div>
             <div>{content}</div>
-            <div className="delete-button" onClick={deleteOnClickHandler}>
-                x
-            </div>
+            {author == globalData.username && (
+                <div
+                    className="comment-delete-button"
+                    onClick={deleteOnClickHandler}
+                >
+                    x
+                </div>
+            )}
         </div>
     );
 }

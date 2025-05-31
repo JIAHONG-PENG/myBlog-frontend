@@ -19,7 +19,11 @@ export default function Headers() {
     }
 
     function newPostOnClickHandler() {
-        router.push("/newPost");
+        if (globalData.username) {
+            router.push("/newPost");
+        } else {
+            alert("Please log in first");
+        }
     }
 
     return (
