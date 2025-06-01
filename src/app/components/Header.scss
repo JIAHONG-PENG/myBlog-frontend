@@ -1,31 +1,32 @@
 #header-section {
     text-align: center;
     position: relative;
-    
+
+    @media (max-width: 768px) {
+        .username {
+            display: none !important;
+        }
+    }
+
     .username {
         position: absolute;
         right: 20px;
         top: 0;
-        display: flex;
         align-items: center;
-        
-        .log-in-button, .log-out-button {
-            border: 1px solid black;
+
+        .log-in-button,
+        .log-out-button {
             width: fit-content;
-            padding: 5px;
             cursor: pointer;
             margin-right: 20px;
         }
-
     }
 
     .new-log-button {
-        border: 1px solid black;
         width: fit-content;
         position: absolute;
         top: 0;
         left: 20px;
-        padding: 5px;
         cursor: pointer;
     }
 }

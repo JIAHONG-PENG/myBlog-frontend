@@ -19,6 +19,7 @@ type Post = {
 
 export default function Home() {
     const [allPost, setAllPost] = useState<Array<Post>>([]);
+    const [isLoading, setIsLoading] = useState(true);
     const hasFetched = useRef(false);
 
     const { setGlobalData } = useGlobalData();
@@ -39,19 +40,25 @@ export default function Home() {
     );
 
     async function fetchPost() {
-        const res = await GET(process.env.NEXT_PUBLIC_SERVER_URL + "/logs");
-        const r = await res.json();
-        setAllPost(r);
+        try {
+            const res = await GET(process.env.NEXT_PUBLIC_SERVER_URL + "/logs");
+            const r = await res.json();
+            setAllPost(r);
+        } catch (error) {
+            console.error("Failed to fetch posts:", error);
+        } finally {
+            setIsLoading(false);
+        }
     }
 
     async function whoami() {
-        const res = await GET(`${process.env.NEXT_PUBLIC_SERVER_URL}/me`);
-        const r = await res.json();
-        setGlobalData({ username: r.username, login: r.login });
-        // if (!r.login) {
-        //     alert("You aren't logged in. To make a post, please log in first");
-        //     // router.push("/login");
-        // }
+        try {
+            const res = await GET(`${process.env.NEXT_PUBLIC_SERVER_URL}/me`);
+            const r = await res.json();
+            setGlobalData({ username: r.username, login: r.login });
+        } catch (error) {
+            console.error("Failed to fetch user data:", error);
+        }
     }
 
     useEffect(() => {
@@ -63,11 +70,29 @@ export default function Home() {
     }, []);
 
     return (
-        <div>
+        <main className="min-h-screen bg-gray-50">
             <Header />
-            <div className="blog-container">
-                {postList.length == 0 ? "No post yet" : postList}
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                <div className="blog-container bg-white rounded-lg shadow-lg">
+                    {isLoading ? (
+                        <div className="flex justify-center items-center min-h-[300px]">
+                            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+                        </div>
+                    ) : postList.length === 0 ? (
+                        <div className="flex flex-col items-center justify-center min-h-[300px] text-gray-500">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9.5a2 2 0 00-2-2h-2" />
+                            </svg>
+                            <p className="text-xl font-medium">No posts yet</p>
+                            <p className="mt-2 text-sm">Be the first to create a post!</p>
+                        </div>
+                    ) : (
+                        <div className="space-y-6">
+                            {postList}
+                        </div>
+                    )}
+                </div>
             </div>
-        </div>
+        </main>
     );
 }

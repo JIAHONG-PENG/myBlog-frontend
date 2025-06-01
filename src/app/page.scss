@@ -1,7 +1,24 @@
 .blog-container {
     min-height: 300px;
-    width: 70%;
+    width: 100%;
+    max-width: 1200px;
     margin: auto;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
     border: 1px solid black;
-    padding: 20px;
+
+    @media (max-width: 1024px) {
+        width: 90%;
+        padding: 1.25rem;
+    }
+
+    @media (max-width: 768px) {
+        width: 95%;
+        padding: 1rem;
+    }
+
+    @media (max-width: 640px) {
+        width: 100%;
+        padding: 0.75rem;
+    }
 }
