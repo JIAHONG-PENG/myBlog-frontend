@@ -31,9 +31,9 @@ export default function Log({
         setComment(r);
     }
 
-    const commentList = comment.map((c, index) => (
+    const commentList = comment.map((c) => (
         <Comment
-            key={index}
+            key={c.commentId}
             logId={c.logId}
             commentId={c.commentId}
             date={c.date}

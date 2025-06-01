@@ -26,9 +26,9 @@ export default function Home() {
     // const router = useRouter();
 
     const postList: React.JSX.Element[] = allPost.map(
-        ({ logId, username, title, date, content }: Post, index: number) => (
+        ({ logId, username, title, date, content }: Post) => (
             <Log
-                key={index}
+                key={logId}
                 logId={logId}
                 title={title}
                 date={date}
@@ -43,6 +43,7 @@ export default function Home() {
         try {
             const res = await GET(process.env.NEXT_PUBLIC_SERVER_URL + "/logs");
             const r = await res.json();
+            // console.log("fetching post", r);
             setAllPost(r);
         } catch (error) {
             console.error("Failed to fetch posts:", error);
