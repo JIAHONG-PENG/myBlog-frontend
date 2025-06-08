@@ -5,6 +5,7 @@
     position: relative;
     transition: all 0.3s;
     margin-bottom: 0.5rem;
+    // cursor: pointer;
 
     @media (min-width: 640px) {
         padding: 1rem;
@@ -110,5 +111,54 @@
 
     &:hover &-delete {
         opacity: 1;
+    }
+
+    &:hover .reply-button {
+        display: block;
+    }
+
+    &-subComment {
+        list-style-type: none;
+        padding-left: 1rem;
+        margin-top: 2rem;
+        margin-bottom: 0.5rem;
+        border-left: 1px solid #e5e7eb;
+        font-size: 0.875rem;
+
+        @media (min-width: 640px) {
+            font-size: 1rem;
+        }
+
+        li {
+            margin-top: 0.25rem;
+            margin-bottom: 0.25rem;
+            cursor: pointer;
+
+            &:hover {
+                background-color: #f3f4f6;
+            }
+        }
+    }
+
+    &-subComment-button {
+        margin: auto;
+        margin-top: 10px;
+        cursor: pointer;
+        background-color: lightgray;
+        padding: 5px;
+        border-radius: 10px;
+        width: fit-content;
+    }
+
+    .reply-button {
+        background-color: lightgreen;
+        padding: 5px;
+        border-radius: 10px;
+        width: fit-content;
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        display: none;
+        cursor: pointer;
     }
 }

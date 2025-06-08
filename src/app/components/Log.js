@@ -13,11 +13,17 @@ export default function Log({
     content,
 }) {
     const [comment, setComment] = useState([]);
+    const [subComment, setSubComment] = useState(null);
     const hasFetched = useRef(false);
     const commentInputRef = useRef();
     const commentInputContainerRef = useRef();
     const commentContainerRef = useRef();
     const newCommentButtonRef = useRef();
+
+    const [replyingTo, setReplyingTo] = useState(null);
+    // const [popUpVisible, setPopUpVisible] = useState(false);
+    // const [popUpPosition, setPopUpPosition] = useState({x: 0, y: 0});
+    // const [popUpInElementMeta, setPopUpInElementMeta] = useState({commentId: null, author: null})
 
     const [commentVisible, setCommentVisible] = useState(false);
     const { globalData } = useGlobalData();
@@ -28,10 +34,42 @@ export default function Log({
         );
         const r = await res.json();
         // console.log(r);
-        setComment(r);
+
+        let subComment = new Map();
+        for (let c of r) {
+            if (c.parent_commentId) {
+                if (subComment.has(c.parent_commentId)) {
+                    subComment.get(c.parent_commentId).push(c);
+                } else {
+                    subComment.set(c.parent_commentId, [c]);
+                }
+            }
+        }
+        // console.log(subComment);
+        setSubComment(subComment);
+        setComment(r.filter(c => c.parent_commentId == null));
     }
 
-    const commentList = comment.map((c) => (
+    const commentList = comment.map((c) => { 
+        let res = [];
+        const subCommentOfThisComment = subComment.get(c.commentId);
+
+        if (subCommentOfThisComment) { 
+            let queue = [];
+            for (const c1 of subCommentOfThisComment) { 
+                queue.push([c1, null]);
+            }
+
+            let c2;
+            while (c2 = queue.shift()) {
+                res.push([c2[0], c2[1]]);
+                for (const c3 of subComment.get(c2[0].commentId) || []) {
+                    queue = [[c3, c2[0]], ...queue];
+                }
+            }
+        }
+        
+        return (
         <Comment
             key={c.commentId}
             logId={c.logId}
@@ -40,16 +78,26 @@ export default function Log({
             author={c.username}
             content={c.content}
             fetchCommment={fetchCommment}
+            // setPopUpPosition={setPopUpPosition}
+            // setPopUpVisible={setPopUpVisible}
+            // setPopUpInElementMeta={setPopUpInElementMeta}
+            commentInputRef={commentInputRef}
+            commentInputContainerRef={commentInputContainerRef}
+            setReplyingTo={setReplyingTo}
+            // subComment={subComment}
+            subComment={res}
         />
-    ));
+    )});
 
     // add new comment
     function newCommentOnClickHandler() {
         if (globalData.username) {
-            commentInputContainerRef.current.classList.toggle("hidden");
+            setReplyingTo(null);
+            commentInputRef.current.placeholder = `Reply to [${author} ${date}]:`;
+            commentInputContainerRef.current.classList.remove("hidden");
             setCommentVisible(true);
         } else {
-            alert("Please log in first");
+            alert("Please log in to comment");
         }
     }
 
@@ -61,6 +109,13 @@ export default function Log({
             commentInputContainerRef.current.classList.add("hidden");
         }
     }
+
+    // function replyClickHandler() {
+    //     setPopUpVisible(false);
+    //     commentInputRef.current.placeholder = `Reply to [${popUpInElementMeta.author}]:`;
+    //     commentInputContainerRef.current.classList.remove("hidden");
+    //     console.log(popUpInElementMeta.commentId, popUpInElementMeta.author);
+    // }
 
     async function commentSubmitOnClickHandler() {
         if (commentInputRef.current.value == "") {
@@ -79,8 +134,11 @@ export default function Log({
                     username: globalData.username,
                     date: getDateTime(),
                     content: c,
+                    parent_commentId: replyingTo
                 }
             );
+
+            setReplyingTo(null);
 
             if (res.ok) {
                 await fetchCommment();
@@ -105,9 +163,29 @@ export default function Log({
         }
     }, []);
 
+    // useEffect(() => {
+    //     const handleOutsideClick = (event) => {
+    //         if (!event.target.className.includes("single-comment") && !event.target.className.includes("pop-up-window")) {
+    //           setPopUpVisible(false);
+    //           setPopUpInElementMeta({commentId: null, author: null});
+    //         }
+    //       };
+        
+    //     if (popUpVisible) {
+    //         document.addEventListener("mousedown", handleOutsideClick);
+    //     } else {
+    //         document.removeEventListener("mousedown", handleOutsideClick);
+    //     }
+
+    //     return () => {
+    //         document.removeEventListener("mousedown", handleOutsideClick);
+    //     };
+    // }, [popUpVisible]);
+
     return (
         <article className="blog-post">
             <div className="blog-post-inner">
+                {/* {popUpVisible && <div className="pop-up-window" onClick={replyClickHandler} style={{top: popUpPosition.y, left: popUpPosition.x}}>Reply</div>} */}
                 <div className="blog-post-content">
                     {author === globalData.username && (
                         <button

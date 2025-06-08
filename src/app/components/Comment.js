@@ -1,6 +1,7 @@
 import "./Comment.scss";
 import { DELETE } from "../util";
 import { useGlobalData } from "./GlobalDataContext";
+import { useEffect, useState } from "react";
 
 export default function Comment({
     logId,
@@ -9,8 +10,35 @@ export default function Comment({
     author,
     content,
     fetchCommment,
+    // setPopUpVisible,
+    // setPopUpPosition,
+    // setPopUpInElementMeta,
+    subComment,
+    commentInputRef,
+    commentInputContainerRef,
+    setReplyingTo,
 }) {
     const { globalData } = useGlobalData();
+    const [subCommentVisible, setSubCommentVisible] = useState(false);
+    // sub-comment of this comment
+    // const [subCommentOfThisComment, setSubCommentOfThisComment] = useState(subComment?.get(commentId));
+
+    // function commentOnClickHandler(event) {
+    //     setPopUpPosition({x: event.clientX, y: event.clientY});
+    //     setPopUpVisible(true);
+    //     setPopUpInElementMeta({commentId, author})
+    // }
+
+    function replyOnClickHandler() {
+        if (globalData.username === null) {
+            alert("Please login to reply");
+            return;
+        }
+
+        commentInputRef.current.placeholder = `Reply to [${author} ${date}]:`;
+        commentInputContainerRef.current.classList.remove("hidden");
+        setReplyingTo(commentId);
+    }
 
     async function deleteOnClickHandler() {
         const res = await DELETE("/comment", {
@@ -22,7 +50,51 @@ export default function Comment({
         }
     }
 
+    function subCommentToggleOnClickHandler() {
+        setSubCommentVisible(!subCommentVisible);
+    }
+
+    function subCommentOnClickHandler(commentId) {
+        const targetComment = subComment.find(c => c[0].commentId === commentId);
+        commentInputRef.current.placeholder = `Reply to [${targetComment[0].username} ${targetComment[0].date}]:`;
+        commentInputContainerRef.current.classList.remove("hidden");
+        setReplyingTo(targetComment[0].commentId);
+    }
+
+    // const subCommentLi = subCommentOfThisComment?.flatMap((c) => { 
+    //     let res = [<li key={c.commentId} onClick={() => subCommentOnClickHandler(c.commentId)}>{c.date} {c.username} : {c.content}</li>];
+    //     let subComment_of_subComment = subComment.get(c.commentId);
+
+    //     if (subComment_of_subComment) {
+    //         let stack = [];
+    //         for (const c1 of subComment_of_subComment) { 
+    //             stack.push(c1);
+    //         }
+
+    //         let c2;
+    //         while (c2 = stack.pop()) {
+    //             res.push(<li key={c2.commentId} onClick={() => subCommentOnClickHandler(c2.commentId)}>{c2.date} {c2.username} {"▶"} {c.username} : {c2.content}</li>);
+                
+    //             for (const c3 of subComment.get(c2.commentId) || []) {
+    //                 stack.push(c3);
+    //             }
+    //         }
+    //     }
+
+    //     return res;
+    //    }
+    // );
+    
+    const subCommentLi = subComment.map((c) => { 
+        return <li key={c[0].commentId} onClick={() => subCommentOnClickHandler(c[0].commentId)}>{c[0].date} {c[0].username} {c[1] && "▶"} {c[1]?.username} : {c[0].content}</li>;
+    });
+    
+    useEffect(() => {
+        // console.log(subComment_new)
+    }, [])
+
     return (
+        <>
         <div className="single-comment">
             <div className="single-comment-header">
                 <div className="single-comment-author">
@@ -53,6 +125,11 @@ export default function Comment({
                     </svg>
                 </button>
             )}
+            {!subCommentVisible && subComment.length > 0 && <div className="single-comment-subComment-button" onClick={subCommentToggleOnClickHandler}>See {subComment.length} comments</div>}
+            {subCommentVisible && <ul className="single-comment-subComment">{subCommentLi}</ul>}
+            {subCommentVisible && subComment.length > 0 && <div className="single-comment-subComment-button" onClick={subCommentToggleOnClickHandler}>Collapse</div>}
+            <div className="reply-button" onClick={replyOnClickHandler}>Reply</div>
         </div>
+        </>
     );
 }
